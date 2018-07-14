@@ -3,6 +3,7 @@ namespace Paysera\Branch\Parsers;
 
 class CLIParser implements Parser 
 {
+	protected $keys = array('date','user_id','user_type','operation_type','amount','currency');
 	/**
 	 * Array based parsing for CSV files trought CLI
 	 * @param string $filename
@@ -22,6 +23,7 @@ class CLIParser implements Parser
 	 */
 	protected function parse($value)
 	{
-		return explode(',',$value);
+		$val = explode(',',$value);
+		return array_combine($this->keys,array_values($val));
 	}
 }

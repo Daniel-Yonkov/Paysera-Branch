@@ -11,12 +11,12 @@ class CLIParserTest extends TestCase
 		$data = '2016-01-05,1,natural,cash_in,200.00,EUR';
 		$result = array(
 			array(
-				'2016-01-05',
-				'1',
-				'natural',
-				'cash_in',
-				'200.00',
-				'EUR'
+				'date'      	 => '2016-01-05',
+				'user_id'   	 => '1',
+				'user_type' 	 => 'natural',
+				'operation_type' => 'cash_in',
+				'amount' 		 =>'200.00',
+				'currency' 		 => 'EUR'
 			)
 		);
 		$this->assertSame($parser->getData($data),$result);
@@ -26,12 +26,12 @@ class CLIParserTest extends TestCase
 		$parser = new CLIParser();
 		$result = array(
 			array(
-				'2016-01-05',
-				'1',
-				'natural',
-				'cash_in',
-				'200.00',
-				'EUR'
+				'date'      	 => '2016-01-05',
+				'user_id'   	 => '1',
+				'user_type' 	 => 'natural',
+				'operation_type' => 'cash_in',
+				'amount' 		 =>'200.00',
+				'currency' 		 => 'EUR'
 			)
 		);
 		$this->assertSame($parser->getData('tests/example.csv'),$result);

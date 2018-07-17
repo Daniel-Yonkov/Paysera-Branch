@@ -6,10 +6,11 @@ class DefaultCashOut extends TaxCalc
 	protected $fee = 0.3;
 	protected $number_of_caches = 3;
 	protected $limit = 1000;
-	protected $limit_currency = 'EUR';
 	protected $amountExceeded = 0;
+        
 	public function taxes($line)
 	{
+		$this->newTypeTransaction('defaul cash_out', yearlyWeek($line['date']), $this->currencyConvert($line['amount'],strtoupper($line['currency'])));
 		$tax = 0;
 		if($this->taxingStrategyIsValid($line)) {
 			if($this->checkIfAmountExceeds($line)){
@@ -17,8 +18,8 @@ class DefaultCashOut extends TaxCalc
 			}
 			$tax = ($this->currencyConvert($tax,'EUR',$line['currency'])*$this->fee)/100;
 		}
-		$this->setTotal($line['user_id'],yearlyWeek($line['date']), $this->amount_in_euro($line['user_id'],yearlyWeek($line['date'])));
-		return roundUp($tax,2);
+		$this->addTypeTotal('defaul cash_out', yearlyWeek($line['date']), $this->getTypeAmountInEuro('defaul cash_out', yearlyWeek($line['date'])));
+                return roundUp($tax,2);
 	}
 	/**
 	 * Checks  if provided amount exceeds the limit and sets by how much
@@ -27,11 +28,11 @@ class DefaultCashOut extends TaxCalc
 	 */
 	protected function checkIfAmountExceeds($line)
 	{
-		$amount = $this->total($line['user_id'],yearlyWeek($line['date']))
+		$amount = $this->getTypeTotal('defaul cash_out', yearlyWeek($line['date']))
 			      +
-			      $this->amount_in_euro($line['user_id'],yearlyWeek($line['date'])); 
+			      $this->getTypeAmountInEuro('defaul cash_out', yearlyWeek($line['date'])); 
 		$tax = ($amount - $this->limit);
-		$exceeds = $tax > 0 ? true : false;
+		$exceeds = $tax > 0;
 		if($exceeds){
 			$this->setExceededAmount($tax,$line);
 		}
@@ -46,8 +47,8 @@ class DefaultCashOut extends TaxCalc
 	public function setExceededAmount($tax,$line)
 	{
 		$this->amountExceeded = 
-				$tax > $this->amount_in_euro($line['user_id'],yearlyWeek($line['date'])) ? 
-				$this->amount_in_euro($line['user_id'],yearlyWeek($line['date'])) :
+				$tax > $this->getTypeAmountInEuro('defaul cash_out', yearlyWeek($line['date'])) ? 
+				$this->getTypeAmountInEuro('defaul cash_out', yearlyWeek($line['date'])) :
 				$tax;
 	}
 	/**
@@ -57,11 +58,11 @@ class DefaultCashOut extends TaxCalc
 	 */
 	public function taxingStrategyIsValid($line)
 	{
-		return ($this->number_of_transactions($line['user_id'],yearlyWeek($line['date'])) > $this->number_of_caches 
+		return $this->getTypedNumberOfTransactions('defaul cash_out', yearlyWeek($line['date'])) 
+                        > $this->number_of_caches 
 			    ||
-		       $this->total($line['user_id'],yearlyWeek($line['date']))
-		       	+
-		       $this->amount_in_euro($line['user_id'],yearlyWeek($line['date'])) > $this->limit
-		       ) ? true : false;
+		       ($this->getTypeTotal('defaul cash_out', yearlyWeek($line['date']))
+		        + $this->getTypeAmountInEuro('defaul cash_out', yearlyWeek($line['date']))) 
+                        > $this->limit;
 	}
 }

@@ -79,17 +79,17 @@ class TransactionController implements Controller
 			$date = yearlyWeek($line['date']);
 			if(!isset($this->usersData[$line['user_id']][$date])){
 				$this->usersData[$line['user_id']][$date]['number_of_transactions'] = 0;
-				$this->usersData[$line['user_id']][$date]['euro_amount'] = 0;
+				$this->usersData[$line['user_id']][$date]['amount_in_euro'] = 0;
 				$this->usersData[$line['user_id']][$date]['total_euro'] = 0;
 			}
 			if(!isset($this->usersData[$line['user_id']][$date]['total_'.$line['currency']])){
 				$this->usersData[$line['user_id']][$date]['total_'.$line['currency']] = 0;
 			}
 			$this->usersData[$line['user_id']][$date]['number_of_transactions']++;
-			$this->usersData[$line['user_id']][$date]['euro_amount'] = $this->currencyConvert($line['amount'],strtoupper($line['currency']));
+			$this->usersData[$line['user_id']][$date]['amount_in_euro'] = $this->currencyConvert($line['amount'],strtoupper($line['currency']));
 			// $result[]=$this->taxCalcs[$line['operation_type']." ".$line['user_type']]->taxes($line);
 			$this->usersData[$line['user_id']][$date]['total_'.$line['currency']] += $line['amount'];
-			$this->usersData[$line['user_id']][$date]['total_euro'] += $this->usersData[$line['user_id']][$date]['euro_amount'];
+			$this->usersData[$line['user_id']][$date]['total_euro'] += $this->usersData[$line['user_id']][$date]['amount_in_euro'];
 		}
 		return $this->usersData;
 	}
